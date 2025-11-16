@@ -1,176 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic Tac Toe</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
 
-    <style>
-        body{
-            margin:0;
-            padding:0;
-            font-family: Arial, sans-serif;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            height:100vh;
-            background:#f2f2f2;
-        }
-
-        .container{
-            width:350px;
-            text-align:center;
-        }
-
-        .form-box input{
-            width:90%;
-            padding:10px;
-            margin:10px 0;
-            font-size:16px;
-        }
-
-        #submit{
-            padding:10px 20px;
-            font-size:16px;
-            cursor:pointer;
-        }
-
-        .board{
-            display:none;
-            margin-top:20px;
-        }
-
-        .grid{
-            display:grid;
-            grid-template-columns: repeat(3, 100px);
-            gap:5px;
-            justify-content:center;
-            margin-top:15px;
-        }
-
-        .cell{
-            width:100px;
-            height:100px;
-            background:white;
-            border:1px solid #000;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            font-size:40px;
-            cursor:pointer;
-        }
-
-        .message{
-            margin-top:10px;
-            font-size:18px;
-            font-weight:600;
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="container">
-
-    <!-- Initial Page -->
-    <div class="form-box" id="player-form">
-        <h1>Tic Tac Toe</h1>
-
-        <input type="text" id="player-1" placeholder="Enter Player 1 Name">
-        <input type="text" id="player-2" placeholder="Enter Player 2 Name">
-
-        <button id="submit">Submit</button>
-    </div>
-
-    <!-- Game Board Page -->
-    <div class="board" id="game-board">
-        <h1>Tic Tac Toe</h1>
-
-        <div class="message" id="messageBox"></div>
-
-        <div class="grid">
-            <div class="cell" id="1"></div>
-            <div class="cell" id="2"></div>
-            <div class="cell" id="3"></div>
-            <div class="cell" id="4"></div>
-            <div class="cell" id="5"></div>
-            <div class="cell" id="6"></div>
-            <div class="cell" id="7"></div>
-            <div class="cell" id="8"></div>
-            <div class="cell" id="9"></div>
-        </div>
-    </div>
-
-</div>
-
-<script>
-const submitBtn = document.getElementById("submit");
-const form = document.getElementById("player-form");
-const board = document.getElementById("game-board");
-const messageBox = document.getElementById("messageBox");
-
-let player1 = "";
-let player2 = "";
-let currentMark = "x"; 
-let currentPlayer = "";
-
-let gameActive = true;
-
-// Submit button → show board
-submitBtn.addEventListener("click", () => {
-    player1 = document.getElementById("player-1").value;
-    player2 = document.getElementById("player-2").value;
-
-    if(player1 === "" || player2 === ""){
-        alert("Please enter both player names");
-        return;
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      margin:0;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:#f2f2f2;
+      height:100vh;
     }
 
+    .container{
+      width:350px;
+      text-align:center;
+    }
+
+    input{
+      width:90%;
+      padding:10px;
+      margin:8px 0;
+      font-size:16px;
+    }
+
+    #submit{
+      padding:10px 18px;
+      background:#0b76ff;
+      color:white;
+      border:none;
+      cursor:pointer;
+      font-size:16px;
+      margin-top:10px;
+    }
+
+    .board{
+      display:none;
+      margin-top:20px;
+    }
+
+    .message{
+      font-size:18px;
+      font-weight:600;
+      min-height:25px;
+      margin-bottom:10px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, 100px);
+      gap:5px;
+      justify-content:center;
+    }
+
+    .cell{
+      width:100px;
+      height:100px;
+      background:white;
+      border:1px solid black;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      font-size:40px;
+      cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- ⬇ REQUIRED BY TESTS ⬇ -->
+    <h1>Tic Tac Toe</h1>
+
+    <input type="text" id="player1" placeholder="Enter Player 1 Name">
+    <input type="text" id="player2" placeholder="Enter Player 2 Name">
+    <button id="submit">Submit</button>
+    <!-- ⬆ REQUIRED BY TESTS ⬆ -->
+
+    <div class="board" id="board">
+      <h1>Tic Tac Toe</h1>
+      <div class="message" id="messageBox"></div>
+
+      <div class="grid">
+        <div class="cell" id="1"></div>
+        <div class="cell" id="2"></div>
+        <div class="cell" id="3"></div>
+        <div class="cell" id="4"></div>
+        <div class="cell" id="5"></div>
+        <div class="cell" id="6"></div>
+        <div class="cell" id="7"></div>
+        <div class="cell" id="8"></div>
+        <div class="cell" id="9"></div>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+  const p1 = document.getElementById("player1");
+  const p2 = document.getElementById("player2");
+  const submit = document.getElementById("submit");
+  const board = document.getElementById("board");
+  const message = document.getElementById("messageBox");
+  const cells = document.querySelectorAll(".cell");
+
+  let player1 = "";
+  let player2 = "";
+  let currentMark = "x";
+  let currentPlayer = "";
+  let active = false;
+  let state = ["","","","","","","","",""];
+
+  const wins = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+
+  submit.addEventListener("click", () => {
+    if(p1.value === "" || p2.value === ""){
+      alert("Please enter both player names");
+      return;
+    }
+
+    player1 = p1.value.trim();
+    player2 = p2.value.trim();
     currentPlayer = player1;
+    message.textContent = `${currentPlayer}, you're up`;
 
-    form.style.display = "none";
+    // Show board
     board.style.display = "block";
+    active = true;
+  });
 
-    messageBox.textContent = `${currentPlayer}, you're up`;
-});
-
-const cells = document.querySelectorAll(".cell");
-let state = ["","","","","","","","",""];
-
-const winPatterns = [
-    [0,1,2], [3,4,5], [6,7,8],
-    [0,3,6], [1,4,7], [2,5,8],
-    [0,4,8], [2,4,6]
-];
-
-cells.forEach(cell => {
+  cells.forEach(cell => {
     cell.addEventListener("click", () => {
-        const index = cell.id - 1;
 
-        if(state[index] !== "" || !gameActive) return;
+      let index = Number(cell.id) - 1;
 
-        state[index] = currentMark;
-        cell.textContent = currentMark;
+      if(state[index] !== "" || !active) return;
 
-        if(checkWinner()){
-            let winnerName = currentMark === "x" ? player1 : player2;
-            messageBox.textContent = `${winnerName} congratulations you won!`;
-            gameActive = false;
-            return;
-        }
+      state[index] = currentMark;
+      cell.textContent = currentMark; // Required by test ("x" in #1)
 
-        currentMark = currentMark === "x" ? "o" : "x";
-        currentPlayer = currentMark === "x" ? player1 : player2;
+      if(checkWin()){
+        const winnerName = (currentMark === 'x') ? player1 : player2;
+        message.textContent = `${winnerName} congratulations you won!`;
+        active = false;
+        return;
+      }
 
-        messageBox.textContent = `${currentPlayer}, you're up`;
+      currentMark = currentMark === "x" ? "o" : "x";
+      currentPlayer = currentMark === "x" ? player1 : player2;
+      message.textContent = `${currentPlayer}, you're up`;
     });
-});
+  });
 
-function checkWinner(){
-    return winPatterns.some(pattern => {
-        return pattern.every(i => state[i] === currentMark);
+  function checkWin(){
+    return wins.some(pattern => {
+      return pattern.every(i => state[i] === currentMark);
     });
-}
+  }
 </script>
 
 </body>
