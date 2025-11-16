@@ -1,215 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Tic Tac Toe</title>
   <style>
-  /* Core layout */
-  body {
-    font-family: Arial, Helvetica, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    margin: 0;
-    padding: 40px 16px;
-    background: #fafafa;
-    color: #222;
-  }
+    /* Minimal, clear styling to match the exercise */
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px;
+      background: #f7f7f7;
+      margin: 0;
+    }
 
-  .container {
-    width: 100%;
-    max-width: 380px;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    padding: 20px;
-    box-sizing: border-box;
-    text-align: center;
-  }
+    .container {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      padding: 18px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      text-align: center;
+    }
 
-  h1 {
-    margin: 0 0 12px;
-    font-size: 24px;
-    letter-spacing: 0.2px;
-  }
+    h1 { margin: 6px 0 14px; font-size: 26px; }
 
-  /* Form */
-  .form-group { margin-bottom: 8px; }
-  input[type="text"] {
-    width: 100%;
-    padding: 10px 12px;
-    margin: 8px 0;
-    font-size: 16px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    box-sizing: border-box;
-    outline: none;
-  }
+    .form-group { margin-bottom: 10px; }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      font-size: 15px;
+    }
 
-  input[type="text"]:focus {
-    border-color: #7aa7ff;
-    box-shadow: 0 0 0 4px rgba(122,167,255,0.12);
-  }
+    #submit {
+      padding: 10px 14px;
+      font-size: 15px;
+      border: none;
+      border-radius: 6px;
+      background: #0b76ff;
+      color: #fff;
+      cursor: pointer;
+    }
 
-  #submit {
-    display: inline-block;
-    background: #1565c0;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    font-size: 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 6px;
-  }
+    .board {
+      display: none; /* shown after submit */
+    }
 
-  #submit:active { transform: translateY(1px); }
+    .message {
+      margin-top: 12px;
+      font-weight: 600;
+      min-height: 22px;
+    }
 
-  /* Game board */
-  .board { display: none; margin-top: 14px; }
-  .message {
-    margin-top: 14px;
-    font-size: 18px;
-    font-weight: 600;
-    min-height: 24px;
-  }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-top: 12px;
-  }
+    .cell {
+      background: #f0f0f0;
+      border-radius: 8px;
+      height: 0;
+      padding-bottom: 100%; /* square */
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-weight: 700;
+    }
 
-  .cell {
-    background: #f7f7f7;
-    border-radius: 8px;
-    height: 0;
-    padding-bottom: 100%; /* 1:1 aspect ratio */
-    position: relative;
-    cursor: pointer;
-    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.03);
-    user-select: none;
-  }
+    .cell.disabled { cursor: default; opacity: 0.9; }
 
-  .cell > span {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 40px;
-    font-weight: 700;
-    line-height: 1;
-  }
+    .win { background: #dff0d8 !important; }
 
-  .cell:hover { transform: translateY(-2px); transition: transform 120ms ease; }
-
-  /* Winner styling */
-  .winner { color: #2e7d32; }
-
-  /* Responsive tweaks */
-  @media (max-width: 420px) {
-    .container { max-width: 320px; padding: 16px; }
-    .cell > span { font-size: 34px; }
-  }
-</style>
+    #reset {
+      margin-top: 12px;
+      display: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      background: #2e7d32;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
 
-<div class="container">
+    <!-- Initial view -->
+    <div class="form-group" id="setup">
+      <h1>Tic Tac Toe</h1>
+      <input type="text" id="player-1" placeholder="Enter Player 1 Name" />
+      <input type="text" id="player-2" placeholder="Enter Player 2 Name" />
+      <button id="submit">Submit</button>
+    </div>
 
-  <div class="form-group" id="player-form">
-    <h1>Tic Tac Toe</h1>
-    <input type="text" id="player1" placeholder="Enter Player 1 Name" />
-    <input type="text" id="player2" placeholder="Enter Player 2 Name" />
-    <button id="submit">Submit</button>
-  </div>
+    <!-- Game view (hidden initially) -->
+    <div class="board" id="game">
+      <h1>Tic Tac Toe</h1>
+      <div class="message" id="message"></div>
 
-  <div class="board" id="game-board">
-    <h1>Tic Tac Toe</h1>
-    <div class="message" id="messageBox"></div>
+      <div class="grid" id="grid">
+        <div class="cell" id="1"></div>
+        <div class="cell" id="2"></div>
+        <div class="cell" id="3"></div>
+        <div class="cell" id="4"></div>
+        <div class="cell" id="5"></div>
+        <div class="cell" id="6"></div>
+        <div class="cell" id="7"></div>
+        <div class="cell" id="8"></div>
+        <div class="cell" id="9"></div>
+      </div>
 
-    <div class="grid">
-      <div class="cell" id="1"></div>
-      <div class="cell" id="2"></div>
-      <div class="cell" id="3"></div>
-      <div class="cell" id="4"></div>
-      <div class="cell" id="5"></div>
-      <div class="cell" id="6"></div>
-      <div class="cell" id="7"></div>
-      <div class="cell" id="8"></div>
-      <div class="cell" id="9"></div>
+      <button id="reset">Play Again</button>
     </div>
   </div>
 
-</div>
+  <script>
+    // Elements
+    const setupDiv = document.getElementById('setup');
+    const submitBtn = document.getElementById('submit');
+    const gameDiv = document.getElementById('game');
+    const msgDiv = document.getElementById('message');
+    const resetBtn = document.getElementById('reset');
 
-<script>
-  const submitBtn = document.getElementById("submit");
-  const playerForm = document.getElementById("player-form");
-  const board = document.getElementById("game-board");
-  const msg = document.getElementById("messageBox");
+    // Inputs (IDs as required by the problem)
+    const player1Input = document.getElementById('player-1');
+    const player2Input = document.getElementById('player-2');
 
-  let p1 = "";
-  let p2 = "";
-  let currentPlayer = "X";
-  let turnPlayerName = "";
+    // Cells
+    const cells = Array.from(document.querySelectorAll('.cell'));
 
-  submitBtn.addEventListener("click", () => {
-    p1 = document.getElementById("player1").value;
-    p2 = document.getElementById("player2").value;
+    // Game state
+    let player1Name = '';
+    let player2Name = '';
+    let currentMark = 'x'; // player1 => 'x', player2 => 'o' (lowercase as requested)
+    let boardState = ['', '', '', '', '', '', '', '', ''];
+    let active = false;
 
-    if (p1 === "" || p2 === "") {
-      alert("Please enter both player names!");
-      return;
-    }
+    // Winning patterns (0-based indexes for boardState)
+    const wins = [
+      [0,1,2], [3,4,5], [6,7,8],
+      [0,3,6], [1,4,7], [2,5,8],
+      [0,4,8], [2,4,6]
+    ];
 
-    playerForm.style.display = "none";
-    board.style.display = "block";
-    turnPlayerName = p1;
-    msg.textContent = `${turnPlayerName}, you're up`;
-  });
+    // Show board after submit
+    submitBtn.addEventListener('click', () => {
+      const p1 = player1Input.value.trim();
+      const p2 = player2Input.value.trim();
 
-  const cells = document.querySelectorAll(".cell");
-  let gameActive = true;
-  let state = ["", "", "", "", "", "", "", "", ""];
-
-  const winPatterns = [
-    [0,1,2], [3,4,5], [6,7,8],
-    [0,3,6], [1,4,7], [2,5,8],
-    [0,4,8], [2,4,6]
-  ];
-
-  cells.forEach(cell => {
-    cell.addEventListener("click", () => {
-      const index = cell.id - 1;
-
-      if (state[index] !== "" || !gameActive) return;
-
-      state[index] = currentPlayer;
-      cell.textContent = currentPlayer;
-
-      if (checkWinner()) {
-        const winnerName = currentPlayer === "X" ? p1 : p2;
-        msg.textContent = `${winnerName}, congratulations you won!`;
-        gameActive = false;
+      if (!p1 || !p2) {
+        alert('Please enter both player names.');
         return;
       }
 
-      currentPlayer = currentPlayer === "X" ? "O" : "X";
-      turnPlayerName = currentPlayer === "X" ? p1 : p2;
-      msg.textContent = `${turnPlayerName}, you're up`;
-    });
-  });
+      player1Name = p1;
+      player2Name = p2;
 
-  function checkWinner() {
-    return winPatterns.some(pattern => {
-      return pattern.every(i => state[i] === currentPlayer);
-    });
-  }
-</script>
+      setupDiv.style.display = 'none';
+      gameDiv.style.display = 'block';
+      resetBtn.style.display = 'inline-block';
 
+      currentMark = 'x';
+      boardState = ['', '', '', '', '', '', '', '', ''];
+      active = true;
+
+      cells.forEach(c => { c.textContent = ''; c.classList.remove('disabled','win'); });
+
+      msgDiv.textContent = `${player1Name}, you're up`;
+    });
+
+    // Cell click handler
+    function onCellClick(e) {
+      if (!active) return;
+      const cell = e.currentTarget;
+      const id = parseInt(cell.id, 10);     // 1..9
+      const idx = id - 1;                   // 0..8
+
+      if (boardState[idx] !== '') return;   // already filled
+
+      boardState[idx] = currentMark;
+      cell.textContent = currentMark;
+
+      // Check win
+      const winLine = checkWinner(currentMark);
+      if (winLine) {
+        const winnerName = currentMark === 'x' ? player1Name : player2Name;
+        msgDiv.textContent = `${winnerName} congratulations you won!`;
+        active = false;
+        // highlight winning cells
+        winLine.forEach(i => {
+          const cid = String(i + 1);
+          const el = document.getElementById(cid);
+          if (el) el.classList.add('win');
+        });
+        // disable remaining cells visually
+        cells.forEach(c => c.classList.add('disabled'));
+        return;
+      }
+
+      // Check draw
+      if (boardState.every(v => v !== '')) {
+        msgDiv.textContent = `It's a draw!`;
+        active = false;
+        return;
+      }
+
+      // Switch player
+      currentMark = currentMark === 'x' ? 'o' : 'x';
+      const nextName = currentMark === 'x' ? player1Name : player2Name;
+      msgDiv.textContent = `${nextName}, you're up`;
+    }
+
+    // Attach listeners
+    cells.forEach(c => c.addEventListener('click', onCellClick));
+
+    // Winner detection returns winning indices or null
+    function checkWinner(mark) {
+      for (let i = 0; i < wins.length; i++) {
+        const [a,b,c] = wins[i];
+        if (boardState[a] === mark && boardState[b] === mark && boardState[c] === mark) {
+          return [a,b,c];
+        }
+      }
+      return null;
+    }
+
+    // Reset / play again
+    resetBtn.addEventListener('click', () => {
+      // Clear board, show setup again
+      setupDiv.style.display = 'block';
+      gameDiv.style.display = 'none';
+      player1Input.value = '';
+      player2Input.value = '';
+      msgDiv.textContent = '';
+      boardState = ['', '', '', '', '', '', '', '', ''];
+      currentMark = 'x';
+      active = false;
+      cells.forEach(c => { c.textContent = ''; c.classList.remove('disabled','win'); });
+    });
+  </script>
 </body>
 </html>
